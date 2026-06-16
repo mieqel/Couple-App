@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>TwoGether 💚</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,600;0,700;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --forest:    #0d5c3a;
+  --plum:      #3b1a4a;
+  --violet:    #4e2070;
+  --gold:      #c9a84c;
+  --ink:       #08100d;
+  --surface:   #0f1a14;
+  --card:      #111c17;
+  --text:      #e8f0ea;
+  --muted:     rgba(232,240,234,.4);
+  --grad-cta:  linear-gradient(135deg,#0d5c3a,#4e2070);
+  --green:     #4caf7d;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{
+  font-family:'Inter',system-ui,sans-serif;
+  background:radial-gradient(ellipse 900px 600px at 10% 0%,#0a2e1c,transparent),
+             radial-gradient(ellipse 700px 500px at 100% 20%,#1e0a2e,transparent),#08100d;
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  padding:20px 14px 40px;color:var(--text);
+}
+
+/* ── phone ── */
+.phone{
+  width:390px;max-width:100vw;height:820px;max-height:96vh;
+  background:var(--ink);border-radius:48px;
+  border:1.5px solid rgba(255,255,255,.06);
+  box-shadow:0 0 0 1px rgba(13,92,58,.3),0 40px 120px rgba(0,0,0,.8);
+  overflow:hidden;display:flex;flex-direction:column;position:relative;
+}
+
+/* ── screens ── */
+.screens{flex:1;overflow:hidden;position:relative;min-height:0;}
+.screen{position:absolute;inset:0;display:none;overflow:hidden;}
+.screen.active{display:flex;flex-direction:column;}
+
+/* ══ FEED ══ */
+#feed-screen{background:#000;}
+.feed-scroll{
+  flex:1;overflow-y:scroll;overflow-x:hidden;
+  scroll-snap-type:y mandatory;
+  -ms-overflow-style:none;scrollbar-width:none;
+}
+.feed-scroll::-webkit-scrollbar{display:none;}
+
+.slide{
+  width:100%;height:100%;
+  scroll-snap-align:start;scroll-snap-stop:always;
+  position:relative;overflow:hidden;flex-shrink:0;
+}
+.slide-img{width:100%;height:100%;object-fit:cover;display:block;}
+.text-bg{
+  width:100%;height:100%;
+  display:flex;align-items:center;justify-content:center;padding:36px;
+}
+.text-content{text-align:center;}
+.text-content .big-emoji{font-size:4.5rem;line-height:1;margin-bottom:20px;display:block;}
+.text-content .slide-title{font-size:1.7rem;}
+.text-content .slide-note{margin-top:12px;color:rgba(232,240,234,.7);}
+.slide-overlay{
+  position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(to top,rgba(5,12,8,.92) 0%,rgba(5,12,8,.2) 55%,rgba(5,12,8,.35) 100%);
+}
+.slide-info{position:absolute;bottom:0;left:0;right:64px;padding:22px 18px 20px;z-index:2;}
+.slide-cat{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(201,168,76,.8);margin-bottom:7px;}
+.slide-title{font-family:'Cormorant Garant',serif;font-size:1.6rem;font-weight:700;line-height:1.18;margin-bottom:7px;color:#fff;}
+.slide-note{font-size:.82rem;color:rgba(255,255,255,.62);line-height:1.55;}
+.slide-actions{position:absolute;right:12px;bottom:22px;display:flex;flex-direction:column;align-items:center;gap:20px;z-index:3;}
+.action-btn{
+  background:rgba(255,255,255,.1);backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.08);border-radius:50%;
+  width:50px;height:50px;font-size:1.35rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .15s,background .2s;
+}
+.action-btn:active{transform:scale(.84);}
+.action-btn.liked{background:rgba(201,168,76,.25);border-color:rgba(201,168,76,.4);}
+.feed-logo{
+  position:absolute;top:0;left:0;right:0;padding:16px 20px 12px;
+  display:flex;justify-content:center;z-index:10;
+  background:linear-gradient(to bottom,rgba(0,0,0,.6),transparent);pointer-events:none;
+}
+.feed-logo span{
+  font-family:'Cormorant Garant',serif;font-size:1.3rem;font-weight:700;
+  background:linear-gradient(90deg,#4caf7d,#c9a84c);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.dots{
+  position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  display:flex;flex-direction:column;gap:5px;z-index:10;pointer-events:none;
+}
+.dot{width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.25);transition:background .2s,height .2s;}
+.dot.active{background:#c9a84c;height:14px;border-radius:2px;}
+
+/* burst */
+.burst{pointer-events:none;position:absolute;inset:0;z-index:30;}
+.burst-heart{position:absolute;font-size:2rem;animation:fly .75s ease-out forwards;opacity:0;}
+@keyframes fly{
+  0%{opacity:1;transform:translate(-50%,-50%) scale(.4);}
+  55%{opacity:1;transform:translate(var(--tx),var(--ty)) scale(1.4);}
+  100%{opacity:0;transform:translate(calc(var(--tx)*1.7),calc(var(--ty)*1.7)) scale(.7);}
+}
+
+/* leaf */
+.leaf{pointer-events:none;position:absolute;font-size:1rem;opacity:0;z-index:1;animation:leafFloat linear infinite;}
+@keyframes leafFloat{
+  0%{opacity:0;transform:translateY(100%) rotate(0deg);}
+  10%{opacity:.18;}90%{opacity:.12;}
+  100%{opacity:0;transform:translateY(-120%) rotate(360deg);}
+}
+
+/* ══ POTENTIALS ══ */
+#pot-screen{background:var(--surface);overflow-y:auto;}
+.pot-inner{padding:20px 16px 100px;}
+.screen-heading{font-family:'Cormorant Garant',serif;font-size:1.4rem;font-weight:700;margin-bottom:4px;}
+.screen-sub{font-size:.78rem;color:var(--muted);margin-bottom:20px;}
+.agenda-item{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;}
+.date-pill{flex-shrink:0;width:52px;text-align:center;background:rgba(13,92,58,.35);border:1px solid rgba(13,92,58,.6);border-radius:14px;padding:9px 4px;}
+.date-pill .day{font-size:1.4rem;font-weight:700;line-height:1;color:#fff;}
+.date-pill .mon{font-size:.6rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#4caf7d;margin-top:2px;}
+.agenda-card{flex:1;background:var(--card);border-radius:18px;border:1px solid rgba(255,255,255,.06);padding:13px 14px;}
+.agenda-card h3{font-size:.95rem;font-weight:600;margin:5px 0 8px;line-height:1.3;}
+.chip{font-size:.63rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;border-radius:7px;padding:2px 8px;display:inline-block;}
+.chip--cat{background:rgba(78,32,112,.4);color:#b07ee0;}
+.chip--media{background:rgba(13,92,58,.3);color:#4caf7d;margin-left:5px;}
+.note2-line{font-size:.78rem;color:var(--muted);font-style:italic;margin:4px 0 9px;}
+.btn-row{display:flex;gap:8px;}
+.btn{border:none;border-radius:11px;padding:8px 15px;font-size:.8rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:opacity .12s,transform .1s;}
+.btn:active{opacity:.72;transform:scale(.96);}
+.btn--primary{background:var(--grad-cta);color:#fff;}
+.btn--done{background:rgba(201,168,76,.18);color:var(--gold);border:1px solid rgba(201,168,76,.3);}
+.btn--ghost{background:rgba(255,255,255,.06);color:var(--muted);}
+.btn--danger{background:rgba(220,50,50,.15);color:#f07070;border:1px solid rgba(220,50,50,.2);}
+.section-label{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(232,240,234,.25);margin:22px 0 12px 2px;}
+.pot-item{background:var(--card);border-radius:18px;border:1px solid rgba(255,255,255,.06);padding:13px 14px;margin-bottom:10px;}
+.pot-item h3{font-size:.95rem;font-weight:600;margin:5px 0 9px;}
+.empty{text-align:center;padding:50px 24px;color:rgba(232,240,234,.25);font-size:.88rem;line-height:1.8;}
+
+/* ══ MEMORIES ══ */
+#mem-screen{background:var(--surface);overflow-y:auto;}
+.mem-inner{padding:20px 16px 100px;}
+.memory-card{background:var(--card);border-radius:18px;border:1px solid rgba(255,255,255,.06);border-left:3px solid rgba(13,92,58,.7);padding:14px 16px;margin-bottom:12px;}
+.memory-card h3{font-size:.95rem;font-weight:600;margin:5px 0 5px;}
+.stamp{font-size:.75rem;color:var(--muted);margin:3px 0 6px;}
+.heart-line{font-size:.8rem;color:var(--gold);font-style:italic;margin-bottom:6px;}
+.photo-dump-upload{margin-bottom:14px;}
+.upload-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:rgba(13,92,58,.2);border:1.5px dashed rgba(13,92,58,.5);border-radius:12px;padding:11px 18px;font-size:.82rem;font-weight:600;color:#4caf7d;cursor:pointer;transition:background .15s;width:100%;}
+.upload-btn:hover{background:rgba(13,92,58,.35);}
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:24px;}
+.photo-thumb{position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;cursor:pointer;background:#0a1410;}
+.thumb-media{width:100%;height:100%;object-fit:cover;display:block;}
+.thumb-delete{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.65);border:none;color:#fff;border-radius:50%;width:22px;height:22px;font-size:.65rem;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;}
+.photo-thumb:active .thumb-delete{opacity:1;}
+.photo-empty{color:var(--muted);font-size:.82rem;text-align:center;padding:20px 0 10px;grid-column:1/-1;}
+
+/* ══ ADMIN ══ */
+#admin-screen{background:var(--surface);overflow-y:auto;}
+.admin-inner{padding:20px 16px 100px;}
+.admin-inner .screen-heading{color:var(--gold);}
+
+.admin-tabs{display:flex;gap:8px;margin-bottom:20px;}
+.admin-tab{flex:1;padding:9px;border:1px solid rgba(255,255,255,.08);border-radius:12px;background:rgba(255,255,255,.04);color:var(--muted);font-size:.78rem;font-weight:600;cursor:pointer;text-align:center;transition:all .15s;}
+.admin-tab.active{background:rgba(13,92,58,.3);border-color:rgba(13,92,58,.6);color:var(--green);}
+
+/* add idea form */
+.form-group{margin-bottom:14px;}
+.form-group label{font-size:.75rem;font-weight:600;color:var(--muted);display:block;margin-bottom:5px;}
+.form-group input,.form-group textarea,.form-group select{
+  width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(13,92,58,.35);
+  border-radius:12px;padding:10px 14px;color:var(--text);font-size:.88rem;
+  outline:none;font-family:'Inter',sans-serif;transition:border-color .2s;
+}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:rgba(13,92,58,.8);}
+.form-group select option{background:#111c17;}
+.form-group textarea{resize:none;height:72px;}
+.form-preview{
+  border-radius:18px;overflow:hidden;position:relative;
+  height:180px;margin-bottom:16px;background:#0a1410;
+  display:flex;align-items:flex-end;
+}
+.form-preview img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.form-preview-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(5,12,8,.9),transparent 60%);}
+.form-preview-text{position:relative;z-index:2;padding:12px 14px;}
+.form-preview-text .prev-cat{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(201,168,76,.8);margin-bottom:4px;}
+.form-preview-text .prev-title{font-family:'Cormorant Garant',serif;font-size:1.2rem;font-weight:700;color:#fff;}
+
+/* idea list in admin */
+.admin-idea{
+  background:var(--card);border-radius:16px;
+  border:1px solid rgba(255,255,255,.06);
+  padding:12px 14px;margin-bottom:10px;
+  display:flex;align-items:center;gap:12px;
+}
+.admin-idea-thumb{width:52px;height:52px;border-radius:10px;object-fit:cover;flex-shrink:0;background:#0a1410;}
+.admin-idea-info{flex:1;min-width:0;}
+.admin-idea-info h4{font-size:.88rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.admin-idea-info p{font-size:.72rem;color:var(--muted);margin-top:2px;}
+.admin-idea-actions{display:flex;gap:6px;flex-shrink:0;}
+.icon-btn{background:rgba(255,255,255,.06);border:none;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:background .15s;}
+.icon-btn:hover{background:rgba(255,255,255,.12);}
+.icon-btn.del:hover{background:rgba(220,50,50,.2);}
+
+/* ── toast ── */
+.toast{
+  position:absolute;top:18px;left:50%;transform:translateX(-50%) translateY(-90px);
+  background:rgba(8,16,13,.95);backdrop-filter:blur(14px);
+  border:1px solid rgba(13,92,58,.5);border-radius:30px;
+  padding:9px 22px;font-size:.83rem;font-weight:500;white-space:nowrap;
+  transition:transform .3s cubic-bezier(.175,.885,.32,1.275);
+  z-index:100;pointer-events:none;color:var(--text);
+}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+/* ── nav ── */
+.nav{
+  display:flex;justify-content:space-around;align-items:center;
+  padding:10px 0 22px;
+  background:rgba(8,16,13,.97);backdrop-filter:blur(20px);
+  border-top:1px solid rgba(13,92,58,.25);
+  flex-shrink:0;position:relative;z-index:20;
+}
+.nav button{
+  background:none;border:none;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:4px 10px;font-size:.58rem;font-weight:600;
+  color:rgba(232,240,234,.28);letter-spacing:.06em;text-transform:uppercase;
+  transition:color .2s;position:relative;font-family:'Inter',sans-serif;
+}
+.nav button .icon{font-size:1.25rem;}
+.nav button.active{color:var(--green);}
+.nav button.active .icon{filter:drop-shadow(0 0 6px rgba(76,175,125,.6));}
+.badge{
+  position:absolute;top:-2px;right:4px;
+  background:var(--gold);color:#000;
+  border-radius:10px;min-width:17px;height:17px;
+  font-size:.6rem;font-weight:700;
+  display:none;align-items:center;justify-content:center;padding:0 4px;
+}
+.badge.show{display:flex;}
+
+/* ── planning sheet ── */
+.backdrop{position:absolute;inset:0;background:rgba(0,0,0,.6);z-index:40;display:none;}
+.backdrop.show{display:block;}
+.sheet{
+  position:absolute;bottom:-110%;left:0;right:0;
+  background:#111c17;border-radius:28px 28px 0 0;
+  border-top:1px solid rgba(13,92,58,.3);
+  padding:20px 22px 40px;z-index:50;
+  transition:bottom .32s cubic-bezier(.22,.85,.32,1);
+}
+.sheet.show{bottom:0;}
+.sheet-handle{width:40px;height:4px;background:rgba(255,255,255,.12);border-radius:2px;margin:0 auto 16px;}
+.sheet h3{font-family:'Cormorant Garant',serif;font-size:1.2rem;font-weight:700;margin-bottom:3px;}
+.sheet .sheet-sub{font-size:.82rem;color:var(--muted);margin-bottom:16px;}
+.sheet label{font-size:.75rem;font-weight:600;color:var(--muted);display:block;margin-bottom:5px;}
+.sheet input,.sheet textarea{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(13,92,58,.35);border-radius:12px;padding:10px 14px;color:var(--text);font-size:.88rem;outline:none;margin-bottom:13px;font-family:'Inter',sans-serif;}
+.sheet textarea{resize:none;height:64px;}
+.sheet-btns{display:flex;gap:10px;}
+.sheet-btns .btn{flex:1;padding:13px;font-size:.88rem;}
+
+/* ── admin login overlay ── */
+.login-overlay{
+  position:absolute;inset:0;z-index:200;
+  background:rgba(8,16,13,.97);backdrop-filter:blur(20px);
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  padding:36px 28px;gap:0;
+}
+.login-overlay.show{display:flex;}
+.login-logo{font-family:"Cormorant Garant",serif;font-size:2rem;font-weight:700;margin-bottom:6px;background:linear-gradient(90deg,#4caf7d,#c9a84c);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.login-sub{font-size:.8rem;color:var(--muted);margin-bottom:32px;}
+.login-field{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(13,92,58,.35);border-radius:12px;padding:12px 16px;color:var(--text);font-size:.95rem;outline:none;font-family:"Inter",sans-serif;margin-bottom:14px;transition:border-color .2s;}
+.login-field:focus{border-color:rgba(13,92,58,.8);}
+.login-btn{width:100%;background:var(--grad-cta);border:none;border-radius:14px;padding:14px;color:#fff;font-size:.95rem;font-weight:700;cursor:pointer;font-family:"Inter",sans-serif;margin-top:4px;}
+.login-error{color:#f07070;font-size:.8rem;margin-top:10px;display:none;}
+.login-error.show{display:block;}
+.login-cancel{margin-top:16px;font-size:.8rem;color:var(--muted);cursor:pointer;text-decoration:underline;background:none;border:none;color:var(--muted);}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="screens">
+
+    <!-- ══ FEED ══ -->
+    <div class="screen active" id="feed-screen">
+      <div class="feed-logo"><span id="logo-tap">TwoGether</span></div>
+      <div class="feed-scroll" id="feed"></div>
+      <div class="dots" id="dots"></div>
+    </div>
+
+    <!-- ══ POTENTIALS ══ -->
+    <div class="screen" id="pot-screen">
+      <div class="pot-inner">
+        <div class="screen-heading">Potentials 💌</div>
+        <div class="screen-sub">Your saved ideas — plan them into your agenda</div>
+        <div id="pot-list"></div>
+      </div>
+    </div>
+
+    <!-- ══ MEMORIES ══ -->
+    <div class="screen" id="mem-screen">
+      <div class="mem-inner">
+        <div class="screen-heading">Memories 📸</div>
+        <div id="mem-list"></div>
+      </div>
+    </div>
+
+    <!-- ══ ADMIN ══ -->
+    <div class="screen" id="admin-screen">
+      <div class="admin-inner">
+        <div class="screen-heading">Admin ⚙️</div>
+        <div class="screen-sub">Only you see this — manage everything here</div>
+        <div class="admin-tabs">
+          <div class="admin-tab active" data-tab="add">➕ Add idea</div>
+          <div class="admin-tab" data-tab="manage">📋 Manage</div>
+        </div>
+        <!-- ADD TAB -->
+        <div id="tab-add">
+          <div class="form-preview" id="form-preview">
+            <div class="form-preview-overlay"></div>
+            <div class="form-preview-text">
+              <div class="prev-cat" id="prev-cat">Category</div>
+              <div class="prev-title" id="prev-title">Your idea title</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Title</label>
+            <input type="text" id="f-title" placeholder="e.g. Sunrise hike at Kinderdijk">
+          </div>
+          <div class="form-group">
+            <label>Category</label>
+            <select id="f-cat">
+              <option>🌿 Outdoors</option>
+              <option>🍴 Food</option>
+              <option>🎭 Creative</option>
+              <option>🏰 History</option>
+              <option>🎮 Games</option>
+              <option>🚢 Amsterdam</option>
+              <option>🌷 Holland</option>
+              <option>✨ Romance</option>
+              <option>🎬 Cinema</option>
+              <option>🏖️ Beach</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Note (shown on slide)</label>
+            <textarea id="f-note" placeholder="A short romantic description..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Image — upload or paste a URL</label>
+            <label class="upload-btn" for="f-img-upload" style="margin-bottom:8px;font-size:.78rem;padding:9px 14px;">📷 Upload from device</label>
+            <input type="file" id="f-img-upload" accept="image/*" style="display:none">
+            <input type="text" id="f-img" placeholder="or paste an image URL...">
+          </div>
+          <div class="form-group">
+            <label>Emoji (for text slides — leave image blank)</label>
+            <input type="text" id="f-emoji" placeholder="🌅" maxlength="2">
+          </div>
+          <button class="btn btn--primary" style="width:100%;padding:14px;font-size:.9rem;margin-top:4px;" id="add-idea-btn">Add to feed ✨</button>
+        </div>
+        <!-- MANAGE TAB -->
+        <div id="tab-manage" style="display:none;">
+          <div id="admin-idea-list"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- admin login overlay -->
+  <div class="login-overlay" id="login-overlay">
+    <div class="login-logo">TwoGether</div>
+    <div class="login-sub">Admin access only</div>
+    <input class="login-field" type="text" id="login-user" placeholder="Username" autocomplete="off">
+    <input class="login-field" type="password" id="login-pass" placeholder="Password" autocomplete="off">
+    <button class="login-btn" id="login-btn">Enter ⚙️</button>
+    <div class="login-error" id="login-error">Wrong credentials. Try again.</div>
+    <button class="login-cancel" id="login-cancel">Cancel</button>
+  </div>
+  <!-- nav -->
+  <nav class="nav">
+    <button class="active" data-screen="feed"><span class="icon">🏠</span>Feed</button>
+    <button data-screen="pot"><span class="icon">💌</span>Potentials<span class="badge" id="pot-badge"></span></button>
+    <button data-screen="mem"><span class="icon">📸</span>Memories</button>
+
+  </nav>
+
+  <div class="toast" id="toast"></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="sheet" id="sheet">
+    <div class="sheet-handle"></div>
+    <h3>Plan a date</h3>
+    <p class="sheet-sub" id="sheet-sub"></p>
+    <label>Pick a date</label>
+    <input type="date" id="plan-date">
+    <label>Add a note (optional)</label>
+    <textarea id="plan-note" placeholder="e.g. book the restaurant first 🍷"></textarea>
+    <div class="sheet-btns">
+      <button class="btn btn--ghost" id="cancel-plan">Cancel</button>
+      <button class="btn btn--primary" id="confirm-plan">It's a date 💕</button>
+    </div>
+  </div>
+  <div class="burst" id="burst"></div>
+</div>
+
+<script>
+// ── DATA ─────────────────────────────────────────────────────────────
+let ideas = [
+  { id:1,  type:'image', src:'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=600&q=80', title:'Canal boat tour in Amsterdam', category:'🚢 Amsterdam', note:'Drift past golden canal houses, spot houseboats, and watch the city slow down. Pure magic at dusk.', status:'new' },
+  { id:2,  type:'image', src:'https://images.unsplash.com/HNI-bDO-V3E?w=600&q=80', title:'Keukenhof tulip fields', category:'🌷 Holland', note:'7 million flowers. The Netherlands showing off. Go early, bring a camera, get lost in colour.', status:'saved' },
+  { id:3,  type:'image', src:'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=600&q=80', title:'Bike ride through the countryside', category:'🌿 Outdoors', note:'Rent bikes, pick a windmill route, stop at a kaasboerderij for cheese. Quintessentially Dutch.', status:'new' },
+  { id:4,  type:'image', src:'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&q=80', title:'Late-night Rotterdam food crawl', category:'🍴 Food', note:'Markthal first, then follow your nose. Three spots, no plan, eat until you physically cannot.', status:'planned', plannedDate:(()=>{const d=new Date();d.setDate(d.getDate()+18);return d.toISOString().slice(0,10);})() },
+  { id:5,  type:'image', src:'https://images.unsplash.com/uUEnBWU6TL8?w=600&q=80', title:'Muiderslot Castle day trip', category:'🏰 History', note:'A real fairytale castle, 20 min from Amsterdam. Guided tour, moat, the works.', status:'new' },
+  { id:6,  type:'image', src:'https://images.unsplash.com/kNmlCjM3apA?w=600&q=80', title:'Kinderdijk windmills at sunset', category:'🌅 Holland', note:'19 windmills, UNESCO-listed, glowing orange at golden hour. Bring wine and a blanket.', status:'new' },
+  { id:7,  type:'text',  emoji:'🧩', gradFrom:'#0a1a0a', gradTo:'#1e0a2e', title:'Board game café', category:'🎮 Games', note:'Loser buys stroopwafels for a week. No exceptions. No negotiations.', status:'done', plannedDate:'2026-05-18', note2:'She destroyed me at Ticket to Ride 😭' },
+  { id:8,  type:'image', src:'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&q=80', title:'Scheveningen beach day', category:'🏖️ Beach', note:'Den Haag\'s beach strip. Seafood, pier, cold North Sea water. Stay until the sun drops.', status:'new' },
+  { id:9,  type:'text',  emoji:'🎨', gradFrom:'#071a10', gradTo:'#2a0e3a', title:'Paint & wine evening', category:'🎭 Creative', note:'Neither of us can paint. That is entirely the point. The worse the better.', status:'new' },
+  { id:10, type:'image', src:'https://images.unsplash.com/OqNbbmZ8RH8?w=600&q=80', title:'Hortus Botanicus picnic', category:'🌿 Amsterdam', note:'6,000 exotic plants, a butterfly greenhouse, and quiet benches. Pack a picnic, stay all afternoon.', status:'new' },
+];
+let nextId = 11;
+const photoDump = [];
+
+// ── HELPERS ──────────────────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+const feedEl  = $('feed');
+const potEl   = $('pot-list');
+const memEl   = $('mem-list');
+const toastEl = $('toast');
+const badge   = $('pot-badge');
+const dotsEl  = $('dots');
+const sheet   = $('sheet');
+const backdrop= $('backdrop');
+const burstEl = $('burst');
+
+// ── BUILD SLIDE ───────────────────────────────────────────────────────
+function buildSlide(idea) {
+  const div = document.createElement('div');
+  div.className = 'slide'; div.dataset.id = idea.id;
+  let inner = '';
+  if (idea.type === 'image') {
+    inner = `<img class="slide-img" src="${idea.src}" alt="${idea.title}" loading="lazy"><div class="slide-overlay"></div>`;
+  } else {
+    const grads = ['linear-gradient(145deg,#071a10,#2a0e3a)','linear-gradient(145deg,#0a1a0a,#1e0a2e)','linear-gradient(145deg,#08101a,#2e1a08)','linear-gradient(145deg,#1a080a,#2e0e1a)'];
+    const bg = idea.gradFrom ? `linear-gradient(145deg,${idea.gradFrom},${idea.gradTo})` : grads[idea.id % grads.length];
+    inner = `<div class="text-bg" style="background:${bg}"><div class="text-content"><span class="big-emoji">${idea.emoji||'✨'}</span><div class="slide-title">${idea.title}</div><div class="slide-note">${idea.note}</div></div></div>`;
+  }
+  div.innerHTML = `${inner}
+    ${idea.type==='image'?`<div class="slide-info"><div class="slide-cat">${idea.category}</div><div class="slide-title">${idea.title}</div><div class="slide-note">${idea.note}</div></div>`:''}
+    <div class="slide-actions">
+      <button class="action-btn like-btn ${idea.status!=='new'?'liked':''}" data-id="${idea.id}">${idea.status!=='new'?'💚':'🤍'}</button>
+    </div>`;
+  return div;
+}
+
+function buildFeed() {
+  feedEl.innerHTML = ''; dotsEl.innerHTML = '';
+  ideas.forEach((idea,i) => {
+    feedEl.appendChild(buildSlide(idea));
+    const dot = document.createElement('div');
+    dot.className = 'dot'+(i===0?' active':'');
+    dotsEl.appendChild(dot);
+  });
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      const idx = [...feedEl.children].indexOf(e.target);
+      if (e.isIntersecting && idx>=0) {
+        document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===idx));
+      }
+    });
+  },{root:feedEl,threshold:0.7});
+  feedEl.querySelectorAll('.slide').forEach(s=>observer.observe(s));
+}
+
+function renderFeed() {
+  feedEl.querySelectorAll('.like-btn').forEach(btn => {
+    const idea = ideas.find(i=>i.id===Number(btn.dataset.id));
+    if(!idea) return;
+    btn.textContent = idea.status!=='new'?'💚':'🤍';
+    btn.classList.toggle('liked',idea.status!=='new');
+  });
+}
+
+// ── POTENTIALS ────────────────────────────────────────────────────────
+function renderPotentials() {
+  const saved = ideas.filter(i=>i.status==='saved'||i.status==='planned');
+  if (!saved.length) { potEl.innerHTML='<div class="empty">Nothing saved yet 🤍<br>Heart an idea in the feed to add it here.</div>'; return; }
+  const planned   = saved.filter(i=>i.status==='planned').sort((a,b)=>new Date(a.plannedDate)-new Date(b.plannedDate));
+  const unplanned = saved.filter(i=>i.status==='saved');
+  let html='';
+  planned.forEach(idea=>{
+    const d=new Date(idea.plannedDate);
+    const day=d.getDate(), mon=d.toLocaleDateString('en-GB',{month:'short'});
+    html+=`<div class="agenda-item"><div class="date-pill"><div class="day">${day}</div><div class="mon">${mon}</div></div><div class="agenda-card"><span class="chip chip--cat">${idea.category}</span><h3>${idea.title}</h3>${idea.note2?`<div class="note2-line">"${idea.note2}"</div>`:''}<div class="btn-row"><button class="btn btn--done" data-act="complete" data-id="${idea.id}">We did it! 🥹</button><button class="btn btn--ghost" data-act="remove" data-id="${idea.id}">Remove</button></div></div></div>`;
+  });
+  if (unplanned.length) {
+    html+=`<div class="section-label">Not yet planned</div>`;
+    unplanned.forEach(idea=>{
+      html+=`<div class="pot-item"><span class="chip chip--cat">${idea.category}</span><h3>${idea.title}</h3><div class="btn-row"><button class="btn btn--primary" data-act="plan" data-id="${idea.id}">Plan it 📅</button><button class="btn btn--ghost" data-act="remove" data-id="${idea.id}">Remove</button></div></div>`;
+    });
+  }
+  potEl.innerHTML=html;
+}
+
+// ── MEMORIES ─────────────────────────────────────────────────────────
+function renderMemories() {
+  const done=ideas.filter(i=>i.status==='done').sort((a,b)=>new Date(b.plannedDate)-new Date(a.plannedDate));
+  let html='';
+  if(done.length){
+    html+=done.map(idea=>{
+      const d=new Date(idea.plannedDate).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+      return `<div class="memory-card"><span class="chip chip--cat">${idea.category}</span><h3>${idea.title}</h3><div class="stamp">📅 ${d}</div>${idea.note2?`<div class="heart-line">"${idea.note2}"</div>`:''}</div>`;
+    }).join('');
+  } else {
+    html+=`<div class="empty" style="padding:30px 0 10px">No date memories yet 💚<br><small>Mark a planned date as done and it'll appear here.</small></div>`;
+  }
+  html+=`<div class="section-label" style="margin-top:26px">Our photos 📷</div>
+    <div class="photo-dump-upload"><label class="upload-btn" for="photo-input">＋ Add photos or videos</label><input type="file" id="photo-input" accept="image/*,video/*" multiple style="display:none"></div>
+    <div class="photo-grid" id="photo-grid"></div>`;
+  memEl.innerHTML=html;
+  renderPhotoGrid();
+  document.getElementById('photo-input').addEventListener('change',function(){
+    Array.from(this.files).forEach(file=>{
+      const reader=new FileReader();
+      reader.onload=e=>{photoDump.unshift({id:Date.now()+Math.random(),dataUrl:e.target.result,isVideo:file.type.startsWith('video')});renderPhotoGrid();};
+      reader.readAsDataURL(file);
+    });this.value='';
+  });
+}
+function renderPhotoGrid(){
+  const grid=document.getElementById('photo-grid');if(!grid)return;
+  if(!photoDump.length){grid.innerHTML=`<p class="photo-empty">Dump your photos here — no organising needed 🌿</p>`;return;}
+  grid.innerHTML=photoDump.map(p=>`<div class="photo-thumb" data-pid="${p.id}">${p.isVideo?`<video src="${p.dataUrl}" class="thumb-media" muted></video>`:``}<img src="${p.isVideo?'':p.dataUrl}" class="thumb-media${p.isVideo?' hidden':''}" alt=""><button class="thumb-delete" data-pid="${p.id}">✕</button></div>`).join('');
+  grid.innerHTML=photoDump.map(p=>`<div class="photo-thumb" data-pid="${p.id}">${p.isVideo?`<video src="${p.dataUrl}" class="thumb-media" muted playsinline></video><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:1.2rem;pointer-events:none">▶️</div>`:`<img src="${p.dataUrl}" class="thumb-media" alt="">`}<button class="thumb-delete" data-pid="${p.id}">✕</button></div>`).join('');
+  grid.querySelectorAll('.thumb-delete').forEach(btn=>{
+    btn.addEventListener('click',e=>{e.stopPropagation();const idx=photoDump.findIndex(p=>String(p.id)===btn.dataset.pid);if(idx!==-1){photoDump.splice(idx,1);renderPhotoGrid();}});
+  });
+}
+
+// ── ADMIN ─────────────────────────────────────────────────────────────
+function renderAdminList() {
+  const list=$('admin-idea-list');
+  list.innerHTML=ideas.map(idea=>{
+    const thumb = idea.type==='image'
+      ? `<img class="admin-idea-thumb" src="${idea.src}" alt="">`
+      : `<div class="admin-idea-thumb" style="display:flex;align-items:center;justify-content:center;font-size:1.6rem;background:linear-gradient(145deg,${idea.gradFrom||'#071a10'},${idea.gradTo||'#2a0e3a'})">${idea.emoji||'✨'}</div>`;
+    const statusLabel = idea.status==='new'?'':'· '+idea.status;
+    return `<div class="admin-idea"><div style="flex-shrink:0">${thumb}</div><div class="admin-idea-info"><h4>${idea.title}</h4><p>${idea.category} ${statusLabel}</p></div><div class="admin-idea-actions"><button class="icon-btn del" data-act="del" data-id="${idea.id}" title="Delete">🗑️</button>${idea.status==='new'?`<button class="icon-btn" data-act="feature" data-id="${idea.id}" title="Move to top">⬆️</button>`:''}</div></div>`;
+  }).join('');
+  list.querySelectorAll('[data-act]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const id=Number(btn.dataset.id);
+      if(btn.dataset.act==='del'){
+        ideas=ideas.filter(i=>i.id!==id);
+        buildFeed();renderAll();renderAdminList();showToast('Idea removed 🗑️');
+      }
+      if(btn.dataset.act==='feature'){
+        const idx=ideas.findIndex(i=>i.id===id);
+        if(idx>0){ideas.unshift(ideas.splice(idx,1)[0]);buildFeed();renderAll();renderAdminList();showToast('Moved to top ⬆️');}
+      }
+    });
+  });
+}
+
+// live preview while typing
+function setupAdminForm(){
+  const titleEl=$('f-title'),catEl=$('f-cat'),imgEl=$('f-img'),emojiEl=$('f-emoji');
+  document.getElementById('f-img-upload').addEventListener('change', function() {
+    const file = this.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => { imgEl.value = e.target.result; updatePreview(); };
+    reader.readAsDataURL(file);
+    this.value = '';
+  });
+  const preview=$('form-preview');
+  function updatePreview(){
+    $('prev-title').textContent=titleEl.value||'Your idea title';
+    $('prev-cat').textContent=catEl.value||'Category';
+    const img=imgEl.value.trim();
+    let existing=preview.querySelector('img');
+    if(img){
+      if(!existing){existing=document.createElement('img');existing.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;';preview.insertBefore(existing,preview.firstChild);}
+      existing.src=img;
+    } else {
+      if(existing)existing.remove();
+    }
+  }
+  [titleEl,catEl,imgEl,emojiEl].forEach(el=>el.addEventListener('input',updatePreview));
+  $('add-idea-btn').addEventListener('click',()=>{
+    const title=titleEl.value.trim();
+    if(!title){showToast('Add a title first!');return;}
+    const img=imgEl.value.trim();
+    const emoji=emojiEl.value.trim();
+    const newIdea={
+      id:nextId++,
+      type:img?'image':'text',
+      src:img||'',
+      emoji:emoji||'✨',
+      gradFrom:'#071a10',gradTo:'#2a0e3a',
+      title,
+      category:catEl.value,
+      note:$('f-note').value.trim()||'A wonderful date idea.',
+      status:'new'
+    };
+    ideas.unshift(newIdea);
+    buildFeed();renderAll();
+    showToast('Added to feed! ✨');
+    titleEl.value='';$('f-note').value='';imgEl.value='';emojiEl.value='';
+    updatePreview();
+  });
+}
+
+// admin tabs
+document.querySelectorAll('.admin-tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.admin-tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    $('tab-add').style.display=tab.dataset.tab==='add'?'block':'none';
+    $('tab-manage').style.display=tab.dataset.tab==='manage'?'block':'none';
+    if(tab.dataset.tab==='manage')renderAdminList();
+  });
+});
+
+// ── BADGE + RENDER ALL ────────────────────────────────────────────────
+function updateBadge(){
+  const n=ideas.filter(i=>i.status==='saved'||i.status==='planned').length;
+  badge.textContent=n;badge.classList.toggle('show',n>0);
+}
+function renderAll(){renderFeed();renderPotentials();renderMemories();updateBadge();}
+
+// ── TOAST ─────────────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg){
+  toastEl.textContent=msg;toastEl.classList.add('show');
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>toastEl.classList.remove('show'),2100);
+}
+
+// ── HEART BURST ───────────────────────────────────────────────────────
+function doBurst(x,y){
+  burstEl.innerHTML='';
+  for(let k=0;k<12;k++){
+    const h=document.createElement('div');h.className='burst-heart';
+    const angle=(k/12)*Math.PI*2,dist=50+Math.random()*65;
+    h.style.cssText=`left:${x}px;top:${y}px;--tx:${Math.cos(angle)*dist}px;--ty:${Math.sin(angle)*dist}px;animation-delay:${k*25}ms;`;
+    h.textContent='💚';burstEl.appendChild(h);
+  }
+  setTimeout(()=>burstEl.innerHTML='',1000);
+}
+
+// ── LEAVES ────────────────────────────────────────────────────────────
+function spawnLeaves(){
+  const phone=document.querySelector('.phone');
+  const leaves=['🍃','🌿','🍀'];
+  setInterval(()=>{
+    if(!document.querySelector('#feed-screen.active'))return;
+    const l=document.createElement('div');l.className='leaf';
+    l.textContent=leaves[Math.floor(Math.random()*leaves.length)];
+    l.style.cssText=`left:${5+Math.random()*90}%;animation-duration:${8+Math.random()*6}s;animation-delay:${Math.random()*2}s;font-size:${.7+Math.random()*.5}rem;`;
+    phone.appendChild(l);setTimeout(()=>l.remove(),16000);
+  },3000);
+}
+
+// ── FEED EVENTS ───────────────────────────────────────────────────────
+let lastTap=0,lastId=null;
+feedEl.addEventListener('click',e=>{
+  const btn=e.target.closest('.like-btn');
+  if(btn){e.stopPropagation();
+    const id=Number(btn.dataset.id),idea=ideas.find(i=>i.id===id);
+    idea.status=idea.status==='new'?'saved':'new';
+    renderAll();showToast(idea.status==='saved'?'Saved to Potentials 💌':'Removed 🤍');return;
+  }
+  const slide=e.target.closest('.slide');if(!slide)return;
+  const id=Number(slide.dataset.id),now=Date.now();
+  if(now-lastTap<300&&lastId===id){
+    const idea=ideas.find(i=>i.id===id);
+    if(idea.status==='new'){idea.status='saved';renderAll();showToast('Saved to Potentials 💌');}
+    const r=slide.closest('.phone').getBoundingClientRect();
+    doBurst(e.clientX-r.left,e.clientY-r.top);lastTap=0;
+  } else{lastTap=now;lastId=id;}
+});
+
+// ── POTENTIALS EVENTS ─────────────────────────────────────────────────
+let planningId=null;
+potEl.addEventListener('click',e=>{
+  const btn=e.target.closest('[data-act]');if(!btn)return;
+  const id=Number(btn.dataset.id),idea=ideas.find(i=>i.id===id);
+  if(btn.dataset.act==='remove'){idea.status='new';renderAll();showToast('Removed 🤍');}
+  if(btn.dataset.act==='plan'){openSheet(idea);}
+  if(btn.dataset.act==='complete'){
+    idea.status='done';if(!idea.plannedDate)idea.plannedDate=new Date().toISOString().slice(0,10);
+    renderAll();showToast('Another memory made 🥹💚');switchTo('mem');
+  }
+});
+
+// ── SHEET ──────────────────────────────────────────────────────────────
+function openSheet(idea){planningId=idea.id;$('sheet-sub').textContent=idea.title;$('plan-date').value='';$('plan-note').value='';sheet.classList.add('show');backdrop.classList.add('show');}
+function closeSheet(){sheet.classList.remove('show');backdrop.classList.remove('show');}
+backdrop.addEventListener('click',closeSheet);
+$('cancel-plan').addEventListener('click',closeSheet);
+$('confirm-plan').addEventListener('click',()=>{
+  const idea=ideas.find(i=>i.id===planningId);
+  const date=$('plan-date').value;
+  if(!date){showToast('Pick a date first 📅');return;}
+  idea.status='planned';idea.plannedDate=date;
+  const note=$('plan-note').value.trim();if(note)idea.note2=note;
+  closeSheet();renderAll();showToast("It's a date 💕");
+});
+
+// ── NAV ────────────────────────────────────────────────────────────────
+function switchTo(target){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active',s.id===`${target}-screen`));
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.screen===target));
+  if(target==='pot')renderPotentials();
+  if(target==='mem')renderMemories();
+  if(target==='admin')renderAdminList();
+}
+document.querySelector('.nav').addEventListener('click',e=>{
+  const btn=e.target.closest('button');if(btn&&btn.dataset.screen)switchTo(btn.dataset.screen);
+});
+
+
+// ── SECRET ADMIN ACCESS ───────────────────────────────────────────────
+let logoTaps = 0, logoTimer;
+document.querySelector('.nav button[data-screen="feed"]').addEventListener('click', () => {
+  logoTaps++;
+  clearTimeout(logoTimer);
+  logoTimer = setTimeout(() => logoTaps = 0, 2000);
+  if (logoTaps >= 5) {
+    logoTaps = 0;
+    document.getElementById('login-overlay').classList.add('show');
+    document.getElementById('login-user').value = '';
+    document.getElementById('login-pass').value = '';
+    document.getElementById('login-error').classList.remove('show');
+  }
+});
+
+document.getElementById('login-btn').addEventListener('click', () => {
+  const user = document.getElementById('login-user').value.trim();
+  const pass = document.getElementById('login-pass').value.trim();
+  if (user === 'admin' && pass === '1234') {
+    document.getElementById('login-overlay').classList.remove('show');
+    switchTo('admin');
+  } else {
+    document.getElementById('login-error').classList.add('show');
+  }
+});
+
+document.getElementById('login-pass').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('login-btn').click();
+});
+
+document.getElementById('login-cancel').addEventListener('click', () => {
+  document.getElementById('login-overlay').classList.remove('show');
+});
+
+// ── INIT ───────────────────────────────────────────────────────────────
+buildFeed();renderAll();setupAdminForm();spawnLeaves();
+</script>
+</body>
+</html>
