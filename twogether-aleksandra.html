@@ -36,26 +36,18 @@ body {
   min-height:100vh;
   display:flex; flex-direction:column;
   align-items:center; justify-content:center;
-  gap:24px; padding:32px 14px 56px;
+  padding:0;
   color: var(--text);
 }
 
-/* ── intro ─────────────────────────── */
-.intro { text-align:center; max-width:420px; }
-.intro h1 {
-  font-family:'Cormorant Garant', serif;
-  font-size:2.2rem; font-weight:700; letter-spacing:-.01em;
-  background: linear-gradient(135deg, #4caf7d 0%, #c9a84c 60%, #9b6fd4 100%);
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-}
-.intro p { color:var(--muted); font-size:.88rem; margin-top:8px; line-height:1.6; }
+
 
 /* ══════════════════════════════════════
    PHONE SHELL
 ══════════════════════════════════════ */
 .phone {
-  width:390px; max-width:97vw;
-  height:780px; max-height:90vh;
+  width:390px; max-width:100vw;
+  height:780px; max-height:100vh;
   background: var(--ink);
   border-radius:48px;
   border:1.5px solid rgba(255,255,255,.06);
@@ -409,11 +401,6 @@ body {
 </head>
 <body>
 
-<div class="intro">
-  <h1>TwoGether 💚</h1>
-  <p>A little world of date ideas, made just for you two. Swipe, save, plan, remember.</p>
-</div>
-
 <div class="phone">
   <div class="screens">
 
@@ -482,9 +469,8 @@ body {
 // ── DATA ─────────────────────────────────────────────────────────────
 const ideas = [
   {
-    id:1, type:'video',
-    src:'https://cdn.coverr.co/videos/coverr-amsterdam-canal-by-boat-7983/1080p.mp4',
-    poster:'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=600&q=80',
+    id:1, type:'image',
+    src:'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=600&q=80',
     title:'Canal boat tour in Amsterdam', category:'🚢 Amsterdam',
     note:'Drift past golden canal houses, spot houseboats, and watch the city slow down. Pure magic at dusk.',
     status:'new'
@@ -497,9 +483,8 @@ const ideas = [
     status:'saved'
   },
   {
-    id:3, type:'video',
-    src:'https://cdn.coverr.co/videos/coverr-cycling-through-amsterdam-8039/1080p.mp4',
-    poster:'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=600&q=80',
+    id:3, type:'image',
+    src:'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=600&q=80',
     title:'Bike ride through the countryside', category:'🚲 Outdoors',
     note:'Rent bikes, pick a windmill route, stop at a kaasboerderij for cheese. Quintessentially Dutch.',
     status:'new'
@@ -520,9 +505,8 @@ const ideas = [
     status:'new'
   },
   {
-    id:6, type:'video',
-    src:'https://cdn.coverr.co/videos/coverr-dutch-windmill-spinning-1296/1080p.mp4',
-    poster:'https://images.unsplash.com/kNmlCjM3apA?w=600&q=80',
+    id:6, type:'image',
+    src:'https://images.unsplash.com/kNmlCjM3apA?w=600&q=80',
     title:'Kinderdijk windmills at sunset', category:'🌅 Holland',
     note:'19 windmills, UNESCO-listed, glowing orange at golden hour. Bring a bottle of wine and a blanket.',
     status:'new'
